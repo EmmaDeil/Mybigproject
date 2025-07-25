@@ -84,8 +84,11 @@ function App() {
     // Redirect based on user role
     if (userData.role === 'admin' || userData.email === 'admin@agritech.com' || userData.email === 'eclefzy@gmail.com') {
       setCurrentPage('admin');
-    } else {
+    } else if (userData.role === 'user' || userData.role === 'customer') {
       setCurrentPage('dashboard'); // Regular users go to user dashboard
+    } else {
+      // Default fallback for any other role
+      setCurrentPage('dashboard');
     }
   };
 

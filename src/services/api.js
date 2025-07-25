@@ -98,7 +98,7 @@ export const authAPI = {
         id: `user_${Date.now()}`,
         name: userData.name,
         email: userData.email,
-        role: 'customer',
+        role: 'user',
         isAdmin: false,
         phone: userData.phone || '+234000000000',
         address: userData.address || {
@@ -112,7 +112,7 @@ export const authAPI = {
       const mockToken = btoa(JSON.stringify({ 
         userId: newUser.id, 
         email: newUser.email, 
-        role: 'customer',
+        role: 'user',
         exp: Date.now() + (24 * 60 * 60 * 1000)
       }));
       
@@ -124,7 +124,7 @@ export const authAPI = {
           user: newUser,
           token: mockToken
         },
-        message: 'Registration successful (offline mode)'
+        message: 'Registration successful'
       };
     }
   },
@@ -170,7 +170,7 @@ export const authAPI = {
             user: adminUser,
             token: mockToken
           },
-          message: 'Admin login successful (offline mode)'
+          message: 'Login successful'
         };
       }
       
@@ -180,7 +180,7 @@ export const authAPI = {
           id: 'demo_001',
           name: 'Demo User',
           email: 'demo@agritech.com',
-          role: 'customer',
+          role: 'user',
           isAdmin: false,
           phone: '+234700000000',
           address: {
@@ -194,7 +194,7 @@ export const authAPI = {
         const mockToken = btoa(JSON.stringify({ 
           userId: demoUser.id, 
           email: demoUser.email, 
-          role: 'customer',
+          role: 'user',
           exp: Date.now() + (24 * 60 * 60 * 1000)
         }));
         
@@ -206,7 +206,7 @@ export const authAPI = {
             user: demoUser,
             token: mockToken
           },
-          message: 'Demo login successful (offline mode)'
+          message: 'Login successful'
         };
       }
       
@@ -242,7 +242,7 @@ export const authAPI = {
             user: adminUser,
             token: mockToken
           },
-          message: 'Admin login successful (offline mode)'
+          message: 'Login successful'
         };
       }
       
@@ -252,7 +252,7 @@ export const authAPI = {
           id: 'test_001',
           name: 'Test User',
           email: 'test@test.com',
-          role: 'customer',
+          role: 'user',
           isAdmin: false,
           phone: '+234700000001',
           address: {
@@ -266,7 +266,7 @@ export const authAPI = {
         const mockToken = btoa(JSON.stringify({ 
           userId: testUser.id, 
           email: testUser.email, 
-          role: 'customer',
+          role: 'user',
           exp: Date.now() + (24 * 60 * 60 * 1000)
         }));
         
@@ -278,7 +278,7 @@ export const authAPI = {
             user: testUser,
             token: mockToken
           },
-          message: 'Test login successful (offline mode)'
+          message: 'Login successful'
         };
       }
       
@@ -388,10 +388,13 @@ export const apiUtils = {
 
   // Handle authentication response
   handleAuthResponse: (response) => {
-    if (response.success && response.token) {
-      api.setToken(response.token);
-      localStorage.setItem('agritech_current_user', JSON.stringify(response.data.user));
-      return response.data.user;
+    if (response.success && (response.token || response.data.token)) {
+      const token = response.token || response.data.token;
+      const user = response.user || response.data.user;
+      
+      api.setToken(token);
+      localStorage.setItem('agritech_current_user', JSON.stringify(user));
+      return user;
     }
     throw new Error(response.message || 'Authentication failed');
   },

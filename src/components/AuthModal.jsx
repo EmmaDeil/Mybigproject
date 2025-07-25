@@ -34,7 +34,7 @@ const AuthModal = ({ show, onHide, onLoginSuccess }) => {
       setTimeout(() => {
         onLoginSuccess(user);
         onHide();
-      }, 1000);
+      }, 500);
     } catch (error) {
       showAlert(error.message || 'Login failed. Please try again.');
     } finally {
