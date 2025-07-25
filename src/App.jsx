@@ -15,6 +15,9 @@ import AuthModal from './components/AuthModal';
 import AdminDashboard from './components/AdminDashboard';
 import UserDashboard from './components/UserDashboard';
 import UserOrdersPage from './components/UserOrdersPage';
+import UserSettings from './components/UserSettings';
+import UserNotification from './components/UserNotification';
+import ScrollToTop from './components/ScrollToTop';
 import { apiUtils } from './services/api';
 
 function App() {
@@ -22,6 +25,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState('landing'); // Start with landing page
   const [user, setUser] = useState(null);
   const [showAuth, setShowAuth] = useState(false);
+  const [notification, setNotification] = useState({ show: false, message: '', variant: 'success' });
 
   // Check for existing user session on app load
   React.useEffect(() => {
@@ -44,13 +48,30 @@ function App() {
           ? { ...item, quantity: item.quantity + 1 }
           : item
       ));
+      showNotification(`Added another ${product.name} to cart!`, 'success');
     } else {
       setCartItems([...cartItems, { ...product, quantity: 1 }]);
+      showNotification(`${product.name} added to cart!`, 'success');
     }
   };
 
   const removeFromCart = (productId) => {
+    const removedItem = cartItems.find(item => item.id === productId);
     setCartItems(cartItems.filter(item => item.id !== productId));
+    if (removedItem) {
+      showNotification(`${removedItem.name} removed from cart`, 'info');
+    }
+  };
+
+  const showNotification = (message, variant = 'success') => {
+    setNotification({ show: true, message, variant });
+  };
+
+  const handleUpdateUser = (updatedUserData) => {
+    setUser(updatedUserData);
+    // Update localStorage
+    localStorage.setItem('agritech_current_user', JSON.stringify(updatedUserData));
+    showNotification('Profile updated successfully!', 'success');
   };
 
   const updateQuantity = (productId, newQuantity) => {
@@ -81,6 +102,9 @@ function App() {
     setUser(userData);
     setShowAuth(false);
     
+    // Show welcome notification
+    showNotification(`Welcome back, ${userData.name || userData.firstName || 'User'}! 🎉`, 'success');
+    
     // Redirect based on user role
     if (userData.role === 'admin' || userData.email === 'admin@agritech.com' || userData.email === 'eclefzy@gmail.com') {
       setCurrentPage('admin');
@@ -93,10 +117,12 @@ function App() {
   };
 
   const handleLogout = () => {
+    const userName = user?.name || user?.firstName || 'User';
     apiUtils.clearAuth();
     setUser(null);
     setCartItems([]);
     setCurrentPage('landing'); // Redirect to landing page after logout
+    showNotification(`Goodbye, ${userName}! See you soon! 👋`, 'info');
   };
 
   const handleShowAuth = () => {
@@ -152,6 +178,7 @@ function App() {
           getTotalPrice={getTotalPrice}
           setCurrentPage={setCurrentPage}
           onShowAuth={handleShowAuth}
+          showNotification={showNotification}
         />;
         
       case 'home':
@@ -166,6 +193,7 @@ function App() {
                   addToCart={addToCart}
                   user={user}
                   onShowAuth={handleShowAuth}
+                  showNotification={showNotification}
                 />
               </div>
             </div>
@@ -213,6 +241,7 @@ function App() {
                         removeFromCart={removeFromCart}
                         setCartItems={setCartItems}
                         user={user}
+                        showNotification={showNotification}
                       />
                     </div>
                   </div>
@@ -260,6 +289,36 @@ function App() {
         }
         
         return <UserOrdersPage user={user} onNavigate={setCurrentPage} />;
+
+      case 'settings':
+        if (!user) {
+          return (
+            <div className="container-fluid px-0 min-vh-100">
+              <div className="row g-0 min-vh-100">
+                <div className="col-12 px-4 py-5 bg-light d-flex align-items-center justify-content-center">
+                  <div className="text-center">
+                    <div style={{ fontSize: '5rem' }} className="mb-4">🔒</div>
+                    <h3 className="text-muted mb-3">Login Required</h3>
+                    <p className="text-muted mb-4">Please login to access your settings</p>
+                    <button 
+                      className="btn btn-success btn-lg"
+                      onClick={handleShowAuth}
+                    >
+                      <i className="fas fa-user me-2"></i>
+                      Login / Sign Up
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+        
+        return <UserSettings 
+          user={user} 
+          onUpdateUser={handleUpdateUser}
+          onNavigate={setCurrentPage} 
+        />;
 
       case 'about':
         return <AboutPage />;
@@ -310,7 +369,8 @@ function App() {
     <div className="App">
       {/* Navigation Header - Show based on user type and current page */}
       {!(user && isAdmin() && currentPage === 'admin') && 
-       !(user && !isAdmin() && currentPage === 'dashboard') && (
+       !(user && !isAdmin() && currentPage === 'dashboard') &&
+       !(currentPage === 'settings') && (
         <NavigationHeader 
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
@@ -331,6 +391,17 @@ function App() {
         onHide={() => setShowAuth(false)}
         onLoginSuccess={handleLoginSuccess}
       />
+
+      {/* User Notifications */}
+      <UserNotification
+        show={notification.show}
+        message={notification.message}
+        variant={notification.variant}
+        onClose={() => setNotification({ ...notification, show: false })}
+      />
+
+      {/* Scroll to Top Button */}
+      <ScrollToTop />
     </div>
   );
 }

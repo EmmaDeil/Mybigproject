@@ -1,184 +1,411 @@
 import React from 'react';
-import { Dropdown, Badge } from 'react-bootstrap';
+import { Dropdown, Badge, Navbar, Nav, Container } from 'react-bootstrap';
 
 const NavigationHeader = ({ currentPage, setCurrentPage, getTotalItems, getTotalPrice, user, onShowAuth, onLogout }) => {
   // Check if user is admin
   const isAdmin = () => {
     return user && (user.email === 'admin@agritech.com' || user.role === 'admin');
   };
+
+  // Enhanced styling for better user experience
+  const navLinkStyle = {
+    transition: 'all 0.3s ease',
+    borderRadius: '8px',
+    margin: '0 4px',
+    padding: '8px 16px',
+  };
+
+  const activeNavStyle = {
+    ...navLinkStyle,
+    fontWeight: 'bold',
+    color: '#ffffff !important',
+  };
+
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-success shadow-sm mb-4">
-      <div className="container-fluid">
-        <a className="navbar-brand d-flex align-items-center" href="#" style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-          <span className="me-2">🌾</span>
-          AgriTech Farm Store
-        </a>
+    <div style={{ position: 'relative', zIndex: 1030 }}>
+      <Navbar expand="lg" className="navbar-dark shadow-sm mb-4" style={{ 
+        backgroundColor: '#28a745',
+        borderBottom: '1px solid rgba(255,255,255,0.1)',
+        position: 'relative',
+        zIndex: 1030
+      }}>
+      <Container fluid>
+        {/* Enhanced Brand */}
+        <Navbar.Brand 
+          className="d-flex align-items-center fw-bold" 
+          style={{ 
+            fontSize: '1.8rem',
+            textShadow: '0 2px 4px rgba(0,0,0,0.2)',
+            cursor: 'pointer'
+          }}
+          onClick={() => setCurrentPage('landing')}
+        >
+          <span className="me-2" style={{ fontSize: '2rem' }}>🌾</span>
+          <span className="d-none d-md-inline">AgriTech Farm Store</span>
+          <span className="d-md-none">AgriTech</span>
+        </Navbar.Brand>
         
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span className="navbar-toggler-icon"></span>
-        </button>
+        <Navbar.Toggle aria-controls="navbarNav" className="border-0" />
         
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav me-auto">
-            <li className="nav-item">
-              <button 
-                className={`nav-link btn btn-link text-white ${currentPage === 'landing' ? 'active fw-bold' : ''}`}
-                onClick={() => setCurrentPage('landing')}
-              >
-                <i className="fas fa-home me-1"></i>Home
-              </button>
-            </li>
-            <li className="nav-item">
-              <button 
-                className={`nav-link btn btn-link text-white ${currentPage === 'home' ? 'active fw-bold' : ''}`}
-                onClick={() => setCurrentPage('home')}
-              >
-                <i className="fas fa-leaf me-1"></i>Products
-              </button>
-            </li>
-            
-            {/* Show Dashboard for logged-in users (but not admins) */}
-            {user && !isAdmin() && (
-              <li className="nav-item">
-                <button 
-                  className={`nav-link btn btn-link text-white ${currentPage === 'dashboard' ? 'active fw-bold' : ''}`}
-                  onClick={() => setCurrentPage('dashboard')}
-                >
-                  <i className="fas fa-tachometer-alt me-1"></i>Dashboard
-                </button>
-              </li>
-            )}
-            
-            {/* Show Orders and Cart only when logged in */}
-            {user && (
+        <Navbar.Collapse id="navbarNav">
+          <Nav className="me-auto">
+            {/* Show full navigation only for guests or admin users */}
+            {!user && (
               <>
-                <li className="nav-item">
+                {/* Home */}
+                <Nav.Item>
                   <button 
-                    className={`nav-link btn btn-link text-white ${currentPage === 'orders' ? 'active fw-bold' : ''}`}
-                    onClick={() => setCurrentPage('orders')}
+                    className={`nav-link btn btn-link text-white border-0 ${currentPage === 'landing' ? 'fw-bold' : ''}`}
+                    onClick={() => setCurrentPage('landing')}
+                    style={currentPage === 'landing' ? activeNavStyle : navLinkStyle}
                   >
-                    <i className="fas fa-box me-1"></i>My Orders
+                    <i className="fas fa-home me-1"></i>
+                    <span className="d-none d-lg-inline">Home</span>
                   </button>
-                </li>
-                <li className="nav-item">
+                </Nav.Item>
+
+                {/* Products */}
+                <Nav.Item>
                   <button 
-                    className={`nav-link btn btn-link text-white ${currentPage === 'cart' ? 'active fw-bold' : ''}`}
-                    onClick={() => setCurrentPage('cart')}
+                    className={`nav-link btn btn-link text-white border-0 ${currentPage === 'home' ? 'fw-bold' : ''}`}
+                    onClick={() => setCurrentPage('home')}
+                    style={currentPage === 'home' ? activeNavStyle : navLinkStyle}
                   >
-                    <i className="fas fa-shopping-cart me-1"></i>
-                    Cart ({getTotalItems()})
+                    <i className="fas fa-leaf me-1"></i>
+                    <span className="d-none d-lg-inline">Products</span>
                   </button>
-                </li>
+                </Nav.Item>
                 
-                {/* Admin Dashboard - Only show for admin users */}
-                {isAdmin() && (
-                  <li className="nav-item">
-                    <button 
-                      className={`nav-link btn btn-link text-warning ${currentPage === 'admin' ? 'active fw-bold' : ''}`}
-                      onClick={() => setCurrentPage('admin')}
-                    >
-                      <i className="fas fa-tachometer-alt me-1"></i>Admin
-                    </button>
-                  </li>
-                )}
+                {/* About */}
+                <Nav.Item>
+                  <button 
+                    className={`nav-link btn btn-link text-white border-0 ${currentPage === 'about' ? 'fw-bold' : ''}`}
+                    onClick={() => setCurrentPage('about')}
+                    style={currentPage === 'about' ? activeNavStyle : navLinkStyle}
+                  >
+                    <i className="fas fa-info-circle me-1"></i>
+                    <span className="d-none d-lg-inline">About</span>
+                  </button>
+                </Nav.Item>
+
+                {/* Contact */}
+                <Nav.Item>
+                  <button 
+                    className={`nav-link btn btn-link text-white border-0 ${currentPage === 'contact' ? 'fw-bold' : ''}`}
+                    onClick={() => setCurrentPage('contact')}
+                    style={currentPage === 'contact' ? activeNavStyle : navLinkStyle}
+                  >
+                    <i className="fas fa-phone me-1"></i>
+                    <span className="d-none d-lg-inline">Contact</span>
+                  </button>
+                </Nav.Item>
               </>
             )}
             
-            <li className="nav-item">
-              <button 
-                className={`nav-link btn btn-link text-white ${currentPage === 'about' ? 'active fw-bold' : ''}`}
-                onClick={() => setCurrentPage('about')}
-              >
-                <i className="fas fa-info-circle me-1"></i>About
-              </button>
-            </li>
-            <li className="nav-item">
-              <button 
-                className={`nav-link btn btn-link text-white ${currentPage === 'contact' ? 'active fw-bold' : ''}`}
-                onClick={() => setCurrentPage('contact')}
-              >
-                <i className="fas fa-phone me-1"></i>Contact
-              </button>
-            </li>
-          </ul>
+            {/* User-specific Navigation Items - Only show cart and orders for regular users */}
+            {user && !isAdmin() && (
+              <>
+                {/* Enhanced Cart with badge */}
+                <Nav.Item>
+                  <button 
+                    className={`nav-link btn btn-link text-white border-0 position-relative ${currentPage === 'cart' ? 'fw-bold' : ''}`}
+                    onClick={() => setCurrentPage('cart')}
+                    style={currentPage === 'cart' ? activeNavStyle : navLinkStyle}
+                  >
+                    <i className="fas fa-shopping-cart me-1"></i>
+                    <span className="d-none d-lg-inline">Cart</span>
+                    {getTotalItems() > 0 && (
+                      <Badge 
+                        bg="warning" 
+                        text="dark"
+                        className="position-absolute top-0 start-100 translate-middle rounded-pill"
+                        style={{ fontSize: '0.7rem', minWidth: '20px' }}
+                      >
+                        {getTotalItems()}
+                      </Badge>
+                    )}
+                  </button>
+                </Nav.Item>
+
+                {/* My Orders with enhanced styling */}
+                <Nav.Item>
+                  <button 
+                    className={`nav-link btn btn-link text-white border-0 position-relative ${currentPage === 'orders' ? 'fw-bold' : ''}`}
+                    onClick={() => setCurrentPage('orders')}
+                    style={currentPage === 'orders' ? activeNavStyle : navLinkStyle}
+                  >
+                    <i className="fas fa-box me-1"></i>
+                    <span className="d-none d-lg-inline">My Orders</span>
+                  </button>
+                </Nav.Item>
+              </>
+            )}
+            
+            {/* Admin-specific Navigation Items */}
+            {user && isAdmin() && (
+              <>
+                {/* Home */}
+                <Nav.Item>
+                  <button 
+                    className={`nav-link btn btn-link text-white border-0 ${currentPage === 'landing' ? 'fw-bold' : ''}`}
+                    onClick={() => setCurrentPage('landing')}
+                    style={currentPage === 'landing' ? activeNavStyle : navLinkStyle}
+                  >
+                    <i className="fas fa-home me-1"></i>
+                    <span className="d-none d-lg-inline">Home</span>
+                  </button>
+                </Nav.Item>
+
+                {/* Products */}
+                <Nav.Item>
+                  <button 
+                    className={`nav-link btn btn-link text-white border-0 ${currentPage === 'home' ? 'fw-bold' : ''}`}
+                    onClick={() => setCurrentPage('home')}
+                    style={currentPage === 'home' ? activeNavStyle : navLinkStyle}
+                  >
+                    <i className="fas fa-leaf me-1"></i>
+                    <span className="d-none d-lg-inline">Products</span>
+                  </button>
+                </Nav.Item>
+
+                {/* Admin Dashboard - Enhanced visibility */}
+                <Nav.Item>
+                  <button 
+                    className={`nav-link btn btn-link border-0 ${currentPage === 'admin' ? 'fw-bold' : ''}`}
+                    onClick={() => setCurrentPage('admin')}
+                    style={{
+                      ...navLinkStyle,
+                      color: '#ffc107',
+                      backgroundColor: currentPage === 'admin' ? 'rgba(255, 193, 7, 0.2)' : 'transparent'
+                    }}
+                  >
+                    <i className="fas fa-cog me-1"></i>
+                    <span className="d-none d-lg-inline">Admin Panel</span>
+                  </button>
+                </Nav.Item>
+              </>
+            )}
+          </Nav>
           
+          {/* Right Side Navigation */}
           <div className="d-flex align-items-center">
             {user ? (
               <>
-                {/* Cart Summary for logged in users */}
+                {/* Enhanced Cart Summary for logged in users */}
                 <div className="me-3 d-none d-md-block">
-                  <small className="text-white-50">Cart Total: </small>
-                  <span className="text-warning fw-bold">₦{getTotalPrice().toLocaleString()}</span>
+                  <div className="d-flex align-items-center p-2 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
+                    <i className="fas fa-shopping-cart text-warning me-2"></i>
+                    <div>
+                      <small className="text-white-50 d-block">Cart Total</small>
+                      <span className="text-warning fw-bold">₦{getTotalPrice().toLocaleString()}</span>
+                    </div>
+                  </div>
                 </div>
                 
-                {/* User Dropdown */}
-                <Dropdown align="end">
+                {/* Enhanced User Dropdown */}
+                <Dropdown align="end" drop="down" autoClose="outside">
                   <Dropdown.Toggle 
                     variant="outline-light" 
                     id="dropdown-user" 
-                    className="d-flex align-items-center border-0 bg-white bg-opacity-25"
+                    className="d-flex align-items-center border-0 shadow-sm"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    style={{ 
+                      backgroundColor: 'rgba(255,255,255,0.15)',
+                      backdropFilter: 'blur(10px)',
+                      borderRadius: '12px',
+                      padding: '8px 16px',
+                      transition: 'all 0.3s ease',
+                      position: 'relative',
+                      zIndex: 1040
+                    }}
                   >
-                    <i className="fas fa-user-circle me-2"></i>
-                    <span className="d-none d-md-inline">{user.firstName}</span>
-                    <span className="d-md-none">👤</span>
+                    <div className="d-flex align-items-center">
+                      <div className="rounded-circle bg-white bg-opacity-25 p-1 me-2">
+                        <i className="fas fa-user text-white"></i>
+                      </div>
+                      <div className="d-none d-md-block text-start">
+                        <div className="fw-bold text-white" style={{ fontSize: '0.9rem' }}>
+                          {user.name || user.firstName || 'User'}
+                        </div>
+                        <small className="text-white-50">
+                          {isAdmin() ? 'Admin' : 'Customer'}
+                        </small>
+                      </div>
+                      <i className="fas fa-chevron-down ms-2 text-white-50" style={{ fontSize: '0.7rem' }}></i>
+                    </div>
                   </Dropdown.Toggle>
 
-                  <Dropdown.Menu className="shadow">
-                    <Dropdown.Header>
-                      <div className="fw-bold">{user.firstName} {user.lastName}</div>
-                      <small className="text-muted">{user.email}</small>
-                      {isAdmin() && <Badge bg="warning" className="mt-1">Admin</Badge>}
+                  <Dropdown.Menu 
+                    className="shadow-lg border-0" 
+                    style={{ 
+                      borderRadius: '12px', 
+                      minWidth: '280px',
+                      zIndex: 9999,
+                      position: 'absolute',
+                      top: '100%',
+                      right: '0',
+                      left: 'auto',
+                      transform: 'none',
+                      willChange: 'transform',
+                      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.25)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      backgroundColor: '#ffffff',
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)',
+                      marginTop: '8px'
+                    }}
+                  >
+                    <Dropdown.Header className="bg-light">
+                      <div className="d-flex align-items-center">
+                        <div className="rounded-circle bg-success p-2 me-3">
+                          <i className="fas fa-user text-white"></i>
+                        </div>
+                        <div>
+                          <div className="fw-bold text-dark">{user.name || user.firstName || 'User'}</div>
+                          <small className="text-muted">{user.email}</small>
+                          {isAdmin() && <Badge bg="warning" text="dark" className="mt-1">Admin</Badge>}
+                        </div>
+                      </div>
                     </Dropdown.Header>
                     <Dropdown.Divider />
                     
-                    <Dropdown.Item onClick={() => setCurrentPage('orders')}>
-                      <i className="fas fa-box me-2"></i>My Orders
+                    {/* User Dashboard */}
+                    {!isAdmin() && (
+                      <Dropdown.Item 
+                        onClick={() => setCurrentPage('dashboard')}
+                        className="d-flex align-items-center py-2"
+                      >
+                        <i className="fas fa-tachometer-alt me-3 text-primary"></i>
+                        <div>
+                          <div className="fw-semibold">My Dashboard</div>
+                          <small className="text-muted">View your account overview</small>
+                        </div>
+                      </Dropdown.Item>
+                    )}
+
+                    {/* Settings */}
+                    <Dropdown.Item 
+                      onClick={() => setCurrentPage('settings')}
+                      className="d-flex align-items-center py-2"
+                    >
+                      <i className="fas fa-cog me-3 text-secondary"></i>
+                      <div>
+                        <div className="fw-semibold">Settings</div>
+                        <small className="text-muted">Manage your profile and preferences</small>
+                      </div>
                     </Dropdown.Item>
                     
-                    <Dropdown.Item onClick={() => setCurrentPage('cart')}>
-                      <i className="fas fa-shopping-cart me-2"></i>
-                      Cart ({getTotalItems()} items)
+                    {/* My Orders */}
+                    <Dropdown.Item 
+                      onClick={() => setCurrentPage('orders')}
+                      className="d-flex align-items-center py-2"
+                    >
+                      <i className="fas fa-box me-3 text-info"></i>
+                      <div>
+                        <div className="fw-semibold">My Orders</div>
+                        <small className="text-muted">Track your purchases</small>
+                      </div>
                     </Dropdown.Item>
                     
+                    {/* Shopping Cart */}
+                    <Dropdown.Item 
+                      onClick={() => setCurrentPage('cart')}
+                      className="d-flex align-items-center py-2"
+                    >
+                      <i className="fas fa-shopping-cart me-3 text-success"></i>
+                      <div className="flex-grow-1">
+                        <div className="fw-semibold d-flex justify-content-between">
+                          <span>Shopping Cart</span>
+                          {getTotalItems() > 0 && (
+                            <Badge bg="success" className="rounded-pill">
+                              {getTotalItems()}
+                            </Badge>
+                          )}
+                        </div>
+                        <small className="text-muted">
+                          {getTotalItems() > 0 ? `₦${getTotalPrice().toLocaleString()}` : 'Empty cart'}
+                        </small>
+                      </div>
+                    </Dropdown.Item>
+                    
+                    {/* Admin Panel for admin users */}
                     {isAdmin() && (
                       <>
                         <Dropdown.Divider />
-                        <Dropdown.Item onClick={() => setCurrentPage('admin')} className="text-warning">
-                          <i className="fas fa-tachometer-alt me-2"></i>Admin Dashboard
+                        <Dropdown.Item 
+                          onClick={() => setCurrentPage('admin')} 
+                          className="d-flex align-items-center py-2"
+                          style={{ backgroundColor: 'rgba(255, 193, 7, 0.1)' }}
+                        >
+                          <i className="fas fa-cog me-3 text-warning"></i>
+                          <div>
+                            <div className="fw-semibold text-warning">Admin Panel</div>
+                            <small className="text-muted">Manage the platform</small>
+                          </div>
                         </Dropdown.Item>
                       </>
                     )}
                     
                     <Dropdown.Divider />
                     
-                    <Dropdown.Item onClick={onLogout} className="text-danger">
-                      <i className="fas fa-sign-out-alt me-2"></i>Logout
+                    {/* Logout */}
+                    <Dropdown.Item 
+                      onClick={onLogout} 
+                      className="d-flex align-items-center py-2 text-danger"
+                    >
+                      <i className="fas fa-sign-out-alt me-3"></i>
+                      <div>
+                        <div className="fw-semibold">Logout</div>
+                        <small className="text-muted">Sign out of your account</small>
+                      </div>
                     </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
               </>
             ) : (
               <>
-                {/* Guest user welcome message */}
+                {/* Enhanced Guest Welcome */}
                 <div className="me-3 d-none d-lg-block">
-                  <small className="text-white-50">Welcome! Please login to start shopping</small>
+                  <div className="text-center">
+                    <small className="text-white-50 d-block">Welcome to AgriTech!</small>
+                    <small className="text-white fw-light">Login to start shopping</small>
+                  </div>
                 </div>
                 
-                {/* Login/Signup button for guests */}
+                {/* Enhanced Login/Signup Button */}
                 <button 
-                  className="btn btn-warning fw-bold"
+                  className="btn fw-bold shadow-sm"
                   onClick={onShowAuth}
+                  style={{
+                    background: 'linear-gradient(45deg, #ffc107, #ffeb3b)',
+                    color: '#333',
+                    border: 'none',
+                    borderRadius: '25px',
+                    padding: '10px 20px',
+                    transition: 'all 0.3s ease',
+                    transform: 'translateY(0)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.transform = 'translateY(-2px)';
+                    e.target.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.transform = 'translateY(0)';
+                    e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                  }}
                 >
-                  <i className="fas fa-user me-1"></i>
+                  <i className="fas fa-user me-2"></i>
                   <span className="d-none d-sm-inline">Get Started</span>
                   <span className="d-sm-none">Login</span>
                 </button>
               </>
             )}
           </div>
-        </div>
-      </div>
-    </nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
+    </div>
   );
 };
 
